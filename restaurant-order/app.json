@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ElektraWeb POS",
-    "slug": "restaurant-order",
+    "slug": "elektra-web-pos",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
