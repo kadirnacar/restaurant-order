@@ -1,3 +1,7 @@
 
-export interface AngusResponse<T> extends Array<Array<T>> {
+export interface AngusResponse<T> {
+    DataTypes?: any;
+    TotalCount?: number;
+    ResultSets: Array<Array<T>>;
+    SQL: string;
 }

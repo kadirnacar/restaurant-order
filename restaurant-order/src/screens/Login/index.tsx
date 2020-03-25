@@ -1,14 +1,13 @@
+import { BackImage, LoaderSpinner } from '@components';
 import { NavigationProp } from '@react-navigation/native';
-import { UserActions } from '@reducers';
+import { DepartmentActions, UserActions } from '@reducers';
 import { ApplicationState } from '@store';
+import { colors, styles } from '@tools';
 import React, { Component } from 'react';
-import { Dimensions, Text, View, ImageBackground, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native';
+import { Alert, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { BackImage, LoaderSpinner } from '@components';
-import { colors, styles } from '@tools';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-const { width } = Dimensions.get('window');
 
 interface LoginState {
     username: string;
@@ -19,6 +18,7 @@ interface LoginState {
 
 interface LoginProps {
     UserActions: typeof UserActions;
+    DepartmentActions: typeof DepartmentActions;
     navigation: NavigationProp<any>;
 }
 
@@ -39,17 +39,21 @@ export class LoginScreenComp extends Component<Props, LoginState> {
         await this.props.UserActions.clear();
     }
     async handleLogin() {
+        this.setState({ isRequest: true })
         const result = await this.props.UserActions.getItem(this.state.username, this.state.password, this.state.tenant);
         if (!result) {
+            this.setState({ isRequest: false })
             Alert.alert("Giriş Başarısız. Lütfen bilgilerinizi kontrol ediniz.")
         } else {
-            this.props.navigation.navigate("Home");
+            await this.props.DepartmentActions.getItems();
+            this.props.navigation.navigate("Department");
+            this.setState({ isRequest: false })
         }
     }
     render() {
         return (
             <BackImage>
-                <LoaderSpinner showLoader={this.props.User.isRequest} />
+                <LoaderSpinner showLoader={this.state.isRequest} />
                 <View style={{ flex: 1, justifyContent: "center" }}>
                     <KeyboardAvoidingView behavior="padding" style={style.container}>
                         <Text
@@ -98,6 +102,7 @@ export const LoginScreen = connect(
     (state: ApplicationState) => state,
     dispatch => {
         return {
+            DepartmentActions: bindActionCreators({ ...DepartmentActions }, dispatch),
             UserActions: bindActionCreators({ ...UserActions }, dispatch)
         };
     }
