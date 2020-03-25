@@ -20,7 +20,7 @@ export default class App extends Component<any, AppState> {
     }
     render() {
         return <SafeAreaProvider>
-            <SafeAreaView style={{ flex: 1, flexDirection: "row" }} forceInset={{ top: "always", bottom: "always" }}>
+            <SafeAreaView style={{ flex: 1, flexDirection: "row" }} forceInset={{ top: "always", bottom: "never" }}>
                 {this.state.isLoaded ? <Provider store={store}>
                     <AppNavigation />
                 </Provider> : <View></View>}

@@ -1,13 +1,43 @@
+import { FontAwesome5 } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { HomeScreen, LoginScreen, DepartmentScreen } from '@screens';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DepartmentActions, UserActions } from '@reducers';
+import { DepartmentScreen, HomeScreen, LoginScreen } from '@screens';
 import { colors, store } from '@tools';
 import * as React from 'react';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { UserActions, DepartmentActions } from '@reducers';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const TabNavigator = () => {
+    return (
+        <Tab.Navigator tabBarOptions={{
+            activeBackgroundColor: colors.color3,
+            inactiveBackgroundColor: colors.color1,
+            activeTintColor: colors.color2,
+
+        }} lazy={true}>
+            <Tab.Screen name="Department"
+                component={DepartmentScreen}
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <FontAwesome5 name="store" color={color} size={size} />
+                    ),
+                }}
+            />
+            <Tab.Screen name="HomeTab"
+                component={HomeScreen}
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <FontAwesome5 name="home" color={color} size={size} />
+                    ),
+                }}
+            />
+        </Tab.Navigator>
+    )
+}
 
 export const AppNavigation = () => {
     return (
@@ -18,8 +48,12 @@ export const AppNavigation = () => {
                     return {
                         headerStyle: { backgroundColor: colors.color1 },
                         headerTintColor: "#fff",
+                        headerBackTitleVisible: false,
                         headerTitleAlign: "center",
                         headerTitle: "ElektraWeb POS",
+                        headerLeft: null,
+                        safeAreaInsets: { bottom: 0, left: 0, right: 0, top: 0 },
+                        animationTypeForReplace:"pop",
                         headerRight: (props) => {
                             return <TouchableOpacity style={{ marginHorizontal: 10 }}
                                 onPress={async () => {
@@ -28,7 +62,7 @@ export const AppNavigation = () => {
 
                                     navigation.navigation.navigate("Login");
                                 }}>
-                                <FontAwesome5 name="power-off" size={28} color="#fff" />
+                                <FontAwesome5 name="power-off" size={20} color="#fff" />
                             </TouchableOpacity>
                         },
                         headerStatusBarHeight: 0
@@ -38,12 +72,11 @@ export const AppNavigation = () => {
                 mode="card"
             >
                 <Stack.Screen name="Login" component={LoginScreen} options={{ headerRight: null }} />
-                <Stack.Screen name="Department"
+                {/* <Stack.Screen name="Department"
                     options={{ headerLeft: null }}
-                    component={DepartmentScreen} />
+                    component={DepartmentScreen} /> */}
                 <Stack.Screen name="Home"
-                    options={{ headerLeft: null }}
-                    component={HomeScreen} />
+                    component={TabNavigator} />
             </Stack.Navigator>
         </NavigationContainer >
     );

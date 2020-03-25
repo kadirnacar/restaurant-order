@@ -46,7 +46,7 @@ export class LoginScreenComp extends Component<Props, LoginState> {
             Alert.alert("Giriş Başarısız. Lütfen bilgilerinizi kontrol ediniz.")
         } else {
             await this.props.DepartmentActions.getItems();
-            this.props.navigation.navigate("Department");
+            this.props.navigation.navigate("Home");
             this.setState({ isRequest: false })
         }
     }

@@ -1,5 +1,6 @@
 export const colors = {
     color1: "rgba(33,36,45,0.9)",
+    color3: "rgba(33,36,45,1)",
     color2: "#ff5252",
     borderColor: "rgba(255,255,255,.3)",
     inputTextColor: "rgba(255,255,255,0.87)",
