@@ -3,7 +3,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { DepartmentScreen, HomeScreen, LoginScreen } from '@screens';
+import { DepartmentScreen, HomeScreen, LoginScreen, TablesScreen } from '@screens';
 import { colors } from '@tools';
 import * as React from 'react';
 
@@ -22,6 +22,14 @@ const TabNavigator = () => {
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <FontAwesome5 name="store" color={color} size={size} />
+                    ),
+                }}
+            />
+            <Tab.Screen name="Tables"
+                component={TablesScreen}
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <FontAwesome5 name="chair" color={color} size={size} />
                     ),
                 }}
             />
