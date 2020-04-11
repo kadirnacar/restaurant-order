@@ -23,7 +23,6 @@ export class HomeScreenComp extends Component<Props, HomeScreenState> {
         })
     }
     render() {
-        console.log("render")
         return (
             <View>
                 <Text>Hello World !</Text>
