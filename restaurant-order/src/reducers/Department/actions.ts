@@ -3,6 +3,7 @@ import { DepartmentService } from "@services";
 import { Alert } from "react-native";
 import { batch } from "react-redux";
 import { Actions } from './state';
+import { TableService } from "@services";
 
 export const actionCreators = {
     getItems: () => async (dispatch, getState) => {
@@ -15,6 +16,28 @@ export const actionCreators = {
             await dispatch({
                 type: Actions.ReceiveDepartmentItems,
                 payload: depts
+            });
+            
+            if (result.hasErrors()) {
+                Alert.alert(result.errors[0]);
+                isSuccess = false;
+                return;
+            }
+
+            isSuccess = true;
+        });
+        return isSuccess;
+    },
+    getTables: () => async (dispatch, getState) => {
+        let isSuccess: boolean = false;
+        await batch(async () => {
+            await dispatch({ type: Actions.RequestTables });
+            var result = await TableService.getTables();
+            var tables = result.value && result.value.ResultSets && result.value.ResultSets.length > 0 ? result.value.ResultSets[0] : [];
+            
+            await dispatch({
+                type: Actions.ReceiveTables,
+                payload: tables
             });
             
             if (result.hasErrors()) {

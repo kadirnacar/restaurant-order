@@ -1,12 +1,11 @@
 import { Action } from 'redux';
-import { Actions, DepartmentState, IReceiveDepartmentItemsAction, ISetCurrentAction, IRequestDepartmentItemsAction } from './state';
+import { Actions, DepartmentState, IReceiveDepartmentItemsAction, IReceiveTablesAction, IRequestTablesAction, ISetCurrentAction, IRequestDepartmentItemsAction } from './state';
 
 const unloadedState: DepartmentState = {
-    items: [],
     current: null
 };
 
-export type KnownAction = IReceiveDepartmentItemsAction | IRequestDepartmentItemsAction | ISetCurrentAction;
+export type KnownAction = IReceiveDepartmentItemsAction | IRequestDepartmentItemsAction | IReceiveTablesAction | IRequestTablesAction | ISetCurrentAction;
 
 export const reducer = (currentState: DepartmentState = unloadedState, incomingAction: Action) => {
     const action = incomingAction as KnownAction;
@@ -14,18 +13,31 @@ export const reducer = (currentState: DepartmentState = unloadedState, incomingA
         case Actions.ReceiveDepartmentItems:
             currentState.isRequest = false;
             if (action.payload) {
-                currentState.items = action.payload;
-                currentState.items.forEach(i => {
-                    if (i.MOBILPOSCONFIG){
-                        i.MobilPosConfigObject = JSON.parse(i.MOBILPOSCONFIG);
-                        delete i.MOBILPOSCONFIG;
+                action.payload.forEach(dep => {
+                    if (dep.MOBILPOSCONFIG) {
+                        dep.MobilPosConfigObject = JSON.parse(dep.MOBILPOSCONFIG);
+                        delete dep.MOBILPOSCONFIG;
                     }
+                    currentState[dep.ID] = dep;
                 })
-            } else {
-                currentState.items = [];
             }
             return { ...currentState };
         case Actions.RequestDepartmentItems:
+            currentState.isRequest = true;
+            return { ...currentState };
+        case Actions.ReceiveTables:
+            currentState.isRequest = false;
+            if (action.payload) {
+                action.payload.forEach(table => {
+                    if (currentState[table.DEPID]) {
+                        if (!currentState[table.DEPID].Tables)
+                            currentState[table.DEPID].Tables = {};
+                        currentState[table.DEPID].Tables[table.ID] = table;
+                    }
+                })
+            }
+            return { ...currentState };
+        case Actions.RequestTables:
             currentState.isRequest = true;
             return { ...currentState };
         case Actions.SetCurrent:

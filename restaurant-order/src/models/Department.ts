@@ -1,3 +1,5 @@
+import { ITable } from "./Table";
+
 export interface IDepartment {
     ID: number;
     DEPCODE: string;
@@ -27,6 +29,7 @@ export interface IDepartment {
     SHOWINBOXOFFICE?: any;
     PARKTENANTID?: any;
     AIENABLED: boolean;
+    Tables?: { [key: number]: ITable };
 }
 
 export interface IMobilPosConfig {

@@ -56,6 +56,7 @@ export class LoginScreenComp extends Component<Props, LoginState> {
         } else {
             await this.props.StaffActions.getItem(this.props.User.current.Tenancy.GARSONID);
             await this.props.DepartmentActions.getItems();
+            await this.props.DepartmentActions.getTables();
             this.props.navigation.navigate("Home");
             this.setState({ isRequest: false })
         }

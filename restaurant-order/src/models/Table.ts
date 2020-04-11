@@ -1,15 +1,14 @@
 export interface ITable {
     ID: number;
-    HOTELID: number;
     DEPID: number;
     TABLENO: string;
-    PAX: number;
-    STATUS: number;
+    TABLEGROUP: string;
+    NOTES?: any;
+    HOTELID: number;
+    PORTALID: number;
+    PAXCOUNT: number;
+    STATE: string;
     XPOS?: any;
     YPOS?: any;
-    TABLEGROUP: string;
-    DESCRIPTION: string;
-    LOCKEDUSER?: any;
-    PORTALID: number;
-    ELEKTRAID?: any;
+    MIGRATIONKEY: string;
 }

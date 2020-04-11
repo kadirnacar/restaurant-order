@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux';
 import { IDepartment } from '@models';
 
 interface DepartmentScreenState {
-    departments?: IDepartment[];
+    departments?: number[];
 }
 
 interface DepartmentProps {
@@ -30,14 +30,14 @@ export class DepartmentScreenComp extends Component<Props, DepartmentScreenState
             .scheme('analogic')
             .variation('hard');
         this.colors = this.scheme.colors();
-        this.state = { departments: [] }
+        this.state = { departments: [] };
     }
     scheme: ColorScheme;
     colors: any;
 
     async componentDidMount() {
         await this.props.DepartmentActions.setCurrent(null);
-        const userDeps = this.props.Department.items?.filter(dep => this.props.Staff.current?.STAFFDEPS?.findIndex(stf => stf.DEPID == dep.ID) > -1);
+        const userDeps = this.props.Staff.current?.STAFFDEPS?.filter(stf => this.props.Department[stf.DEPID] != null).map(depId => depId.DEPID);
         this.setState({ departments: userDeps });
     }
     render() {
@@ -45,18 +45,19 @@ export class DepartmentScreenComp extends Component<Props, DepartmentScreenState
             <BackImage>
                 <LoaderSpinner showLoader={this.props.Department.isRequest} />
                 <FlatList
-                    data={this.state.departments ? this.state.departments : []}
+                    data={this.state.departments}
                     style={{ flex: 1 }}
                     renderItem={({ item, index }) => {
                         const color = hexToRgb(this.colors[index % 12]);
+                        const dep = this.props.Department[item];
                         return (
                             <TouchableHighlight underlayColor="#ffffff00" key={index}
                                 style={[style.button, { backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)` }]}
                                 onPress={async () => {
-                                    this.props.DepartmentActions.setCurrent(item);
+                                    this.props.DepartmentActions.setCurrent(dep);
                                 }}>
 
-                                <Text style={style.buttonText}>{item.DEPARTMENTNAME}</Text>
+                                <Text style={style.buttonText}>{dep.DEPARTMENTNAME}</Text>
                             </TouchableHighlight>
                         )
                     }}

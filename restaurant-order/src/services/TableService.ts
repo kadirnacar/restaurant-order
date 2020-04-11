@@ -4,19 +4,19 @@ import { AngusResponse } from './AngusResponse';
 import { ServiceBase } from "./ServiceBase";
 
 export class TableService extends ServiceBase {
-    public static async getDepartmentTables(depId: number) {
+    public static async getTables() {
         var result = await this.requestJson<AngusResponse<ITable>>({
             url: `${config.restUrl}`,
             method: "POST",
             data: {
-                "Object": "POS_TABLES",
+                "Object": "POS_TABLE",
                 "Action": "Select",
                 "Select": [],
-                "Where": [{
-                    "Column": "DEPID",
-                    "Operator": "=",
-                    "Value": depId
-                }]
+                // "Where": [{
+                //     "Column": "DEPID",
+                //     "Operator": "=",
+                //     "Value": depId
+                // }]
             }
         });
 
