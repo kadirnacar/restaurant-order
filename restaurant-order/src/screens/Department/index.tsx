@@ -9,8 +9,10 @@ import { FlatList, StyleSheet, Text } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { IDepartment } from '@models';
 
 interface DepartmentScreenState {
+    departments?: IDepartment[];
 }
 
 interface DepartmentProps {
@@ -28,26 +30,29 @@ export class DepartmentScreenComp extends Component<Props, DepartmentScreenState
             .scheme('analogic')
             .variation('hard');
         this.colors = this.scheme.colors();
+        this.state = { departments: [] }
     }
     scheme: ColorScheme;
     colors: any;
 
     async componentDidMount() {
         await this.props.DepartmentActions.setCurrent(null);
+        const userDeps = this.props.Department.items?.filter(dep => this.props.Staff.current?.STAFFDEPS?.findIndex(stf => stf.DEPID == dep.ID) > -1);
+        this.setState({ departments: userDeps });
     }
     render() {
         return (
             <BackImage>
                 <LoaderSpinner showLoader={this.props.Department.isRequest} />
                 <FlatList
-                    data={this.props.Department.items}
+                    data={this.state.departments ? this.state.departments : []}
                     style={{ flex: 1 }}
                     renderItem={({ item, index }) => {
-                        const color = hexToRgb(this.colors[index]);
+                        const color = hexToRgb(this.colors[index % 12]);
                         return (
                             <TouchableHighlight underlayColor="#ffffff00" key={index}
                                 style={[style.button, { backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)` }]}
-                                onPressIn={async () => {
+                                onPress={async () => {
                                     this.props.DepartmentActions.setCurrent(item);
                                 }}>
 

@@ -1,6 +1,6 @@
 import { BackImage, LoaderSpinner } from '@components';
 import { NavigationProp } from '@react-navigation/native';
-import { DepartmentActions, UserActions } from '@reducers';
+import { DepartmentActions, UserActions, StaffActions } from '@reducers';
 import { ApplicationState } from '@store';
 import { colors, styles } from '@tools';
 import React, { Component } from 'react';
@@ -18,6 +18,7 @@ interface LoginState {
 interface LoginProps {
     UserActions: typeof UserActions;
     DepartmentActions: typeof DepartmentActions;
+    StaffActions: typeof StaffActions;
     navigation: NavigationProp<any>;
 }
 
@@ -28,9 +29,12 @@ export class LoginScreenComp extends Component<Props, LoginState> {
     constructor(props) {
         super(props);
         this.state = {
-            username: "demo",
-            password: "123",
-            tenant: "18892"
+            // username: "demo",
+            // password: "123",
+            // tenant: "18892"
+            username: "posdemo",
+            password: "123456a.",
+            tenant: "341"
         }
         this.handleLogin = this.handleLogin.bind(this);
     }
@@ -41,9 +45,16 @@ export class LoginScreenComp extends Component<Props, LoginState> {
         this.setState({ isRequest: true })
         const result = await this.props.UserActions.getItem(this.state.username, this.state.password, this.state.tenant);
         if (!result) {
-            this.setState({ isRequest: false })
-            Alert.alert("Giriş Başarısız. Lütfen bilgilerinizi kontrol ediniz.")
+            Alert.alert("Giriş Başarısız. Lütfen bilgilerinizi kontrol ediniz.", null, [
+                {
+                    text: "Tamam", onPress: () => {
+                        this.setState({ isRequest: false });
+                    }
+                }
+            ])
+            
         } else {
+            await this.props.StaffActions.getItem(this.props.User.current.Tenancy.GARSONID);
             await this.props.DepartmentActions.getItems();
             this.props.navigation.navigate("Home");
             this.setState({ isRequest: false })
@@ -102,7 +113,8 @@ export const LoginScreen = connect(
     dispatch => {
         return {
             DepartmentActions: bindActionCreators({ ...DepartmentActions }, dispatch),
-            UserActions: bindActionCreators({ ...UserActions }, dispatch)
+            UserActions: bindActionCreators({ ...UserActions }, dispatch),
+            StaffActions: bindActionCreators({ ...StaffActions }, dispatch)
         };
     }
 )(LoginScreenComp);

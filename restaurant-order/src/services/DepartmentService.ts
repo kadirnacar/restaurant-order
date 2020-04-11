@@ -1,7 +1,7 @@
 import config from '@config';
-import { ServiceBase } from "./ServiceBase";
+import { IDepartment } from '@models';
 import { AngusResponse } from './AngusResponse';
-import { IDepartment } from 'src/models/Department';
+import { ServiceBase } from "./ServiceBase";
 
 export class DepartmentService extends ServiceBase {
     public static async getItems() {

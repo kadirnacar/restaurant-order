@@ -81,7 +81,7 @@ export abstract class ServiceBase {
 
             result = new Result<T>(axiosResult.data, null);
         } catch (error) {
-            result = new Result<T>(null, error.response && error.response.data ? error.response.data : error.message);
+            result = new Result<T>(null, opts.url + (error.response && error.response.data ? error.response.data : error.message));
         }
 
         if (result.hasErrors) {

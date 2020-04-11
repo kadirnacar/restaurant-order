@@ -1,3 +1,5 @@
 // export { FileService } from './FileService';
-export { UserService } from './UserService';
 export { DepartmentService } from './DepartmentService';
+export { StaffService } from './StaffService';
+export { UserService } from './UserService';
+

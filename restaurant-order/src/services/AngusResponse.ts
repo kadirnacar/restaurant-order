@@ -5,3 +5,8 @@ export interface AngusResponse<T> {
     ResultSets: Array<Array<T>>;
     SQL: string;
 }
+export interface FunctionReturn{
+    Return?: string;
+}
+export interface AngusFunctionResponse<T> extends Array<Array<FunctionReturn>> {
+}

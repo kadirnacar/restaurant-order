@@ -1,6 +1,6 @@
 import config from '@config';
-import { ServiceBase } from "./ServiceBase";
 import { IUser } from '@models';
+import { ServiceBase } from "./ServiceBase";
 
 export class UserService extends ServiceBase {
     public static async getItem(username: string, password: string, tenant: string) {

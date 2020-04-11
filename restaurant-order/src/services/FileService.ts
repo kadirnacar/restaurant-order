@@ -1,6 +1,6 @@
 // import * as RNFS from 'react-native-fs';
-import * as FileSystem from 'expo-file-system';
 import { ApplicationState } from '@store';
+import * as FileSystem from 'expo-file-system';
 import * as path from 'path';
 
 class FileServiceHelper {

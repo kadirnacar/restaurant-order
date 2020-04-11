@@ -51,6 +51,7 @@ export interface Tenancy {
     GROUPHOTELCOUNT: number;
     STDUSERID: number;
     HOTELID: number;
+    GARSONID: number;
 }
 
 export interface IUser {
