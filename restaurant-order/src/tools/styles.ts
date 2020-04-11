@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
     },
     primaryButton: {
         alignContent: "center",
-        textAlign: "center",
+        // textAlign: "center",
         alignItems: "center",
         backgroundColor: colors.primaryButtonColor,
         marginBottom: 20,

@@ -1,8 +1,8 @@
 import { IDepartment } from "@models";
-import { DepartmentService, FileService } from "@services";
+import { DepartmentService } from "@services";
+import { Alert } from "react-native";
 import { batch } from "react-redux";
 import { Actions } from './state';
-import { Alert } from "react-native";
 
 export const actionCreators = {
     getItems: () => async (dispatch, getState) => {

@@ -1,12 +1,11 @@
+import { HeaderRight, HeaderTitle } from '@components';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { DepartmentActions, UserActions } from '@reducers';
 import { DepartmentScreen, HomeScreen, LoginScreen } from '@screens';
-import { colors, store } from '@tools';
+import { colors } from '@tools';
 import * as React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -17,8 +16,7 @@ const TabNavigator = () => {
             activeBackgroundColor: colors.color3,
             inactiveBackgroundColor: colors.color1,
             activeTintColor: colors.color2,
-
-        }} lazy={true}>
+        }} lazy={false} screenOptions={{ unmountOnBlur: true }}>
             <Tab.Screen name="Department"
                 component={DepartmentScreen}
                 options={{
@@ -50,20 +48,14 @@ export const AppNavigation = () => {
                         headerTintColor: "#fff",
                         headerBackTitleVisible: false,
                         headerTitleAlign: "center",
-                        headerTitle: "ElektraWeb POS",
+                        headerTitle: (props) => {
+                            return <HeaderTitle style={[props.style, { color: "#fff", fontWeight: "bold", fontSize: 20 }]} />;
+                        },
                         headerLeft: null,
                         safeAreaInsets: { bottom: 0, left: 0, right: 0, top: 0 },
-                        animationTypeForReplace:"pop",
+                        animationTypeForReplace: "pop",
                         headerRight: (props) => {
-                            return <TouchableOpacity style={{ marginHorizontal: 10 }}
-                                onPress={async () => {
-                                    await UserActions.clear()(store.dispatch, store.getState);
-                                    await DepartmentActions.setCurrent(null)(store.dispatch, store.getState);
-
-                                    navigation.navigation.navigate("Login");
-                                }}>
-                                <FontAwesome5 name="power-off" size={20} color="#fff" />
-                            </TouchableOpacity>
+                            return <HeaderRight navigation={navigation.navigation} />
                         },
                         headerStatusBarHeight: 0
                     }

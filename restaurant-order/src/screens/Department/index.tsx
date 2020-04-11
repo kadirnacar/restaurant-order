@@ -48,7 +48,6 @@ export class DepartmentScreenComp extends Component<Props, DepartmentScreenState
                             <TouchableHighlight underlayColor="#ffffff00" key={index}
                                 style={[style.button, { backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)` }]}
                                 onPressIn={async () => {
-                                    console.log(item)
                                     this.props.DepartmentActions.setCurrent(item);
                                 }}>
 

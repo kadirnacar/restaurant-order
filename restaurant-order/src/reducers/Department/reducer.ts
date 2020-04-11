@@ -16,8 +16,10 @@ export const reducer = (currentState: DepartmentState = unloadedState, incomingA
             if (action.payload) {
                 currentState.items = action.payload;
                 currentState.items.forEach(i => {
-                    if (i.MOBILPOSCONFIG)
+                    if (i.MOBILPOSCONFIG){
                         i.MobilPosConfigObject = JSON.parse(i.MOBILPOSCONFIG);
+                        delete i.MOBILPOSCONFIG;
+                    }
                 })
             } else {
                 currentState.items = [];

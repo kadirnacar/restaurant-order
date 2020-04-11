@@ -4,8 +4,7 @@ import { DepartmentActions, UserActions } from '@reducers';
 import { ApplicationState } from '@store';
 import { colors, styles } from '@tools';
 import React, { Component } from 'react';
-import { Alert, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
