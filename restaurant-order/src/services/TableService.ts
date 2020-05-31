@@ -12,6 +12,10 @@ export class TableService extends ServiceBase {
                 "Object": "POS_TABLE",
                 "Action": "Select",
                 "Select": [],
+                "Paging": {
+                    "Current": 1,
+                    "ItemsPerPage": 9999
+                }
                 // "Where": [{
                 //     "Column": "DEPID",
                 //     "Operator": "=",
