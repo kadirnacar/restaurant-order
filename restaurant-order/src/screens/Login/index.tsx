@@ -1,6 +1,6 @@
 import { BackImage, LoaderSpinner } from "@components";
 import { NavigationProp } from "@react-navigation/native";
-import { DepartmentActions, StaffActions, UserActions } from "@reducers";
+import { DepartmentActions, StaffActions, UserActions, StokGrupActions } from "@reducers";
 import { ApplicationState } from "@store";
 import { colors, styles } from "@tools";
 import React, { Component } from "react";
@@ -27,6 +27,7 @@ interface LoginProps {
   UserActions: typeof UserActions;
   DepartmentActions: typeof DepartmentActions;
   StaffActions: typeof StaffActions;
+  StokGrupActions: typeof StokGrupActions;
   navigation: NavigationProp<any>;
 }
 
@@ -74,6 +75,7 @@ export class LoginScreenComp extends Component<Props, LoginState> {
       );
       await this.props.DepartmentActions.getItems();
       await this.props.DepartmentActions.getTables();
+      await this.props.StokGrupActions.getItems();
       this.props.navigation.navigate("Home");
       this.setState({ isRequest: false });
     }
@@ -146,6 +148,7 @@ export const LoginScreen = connect(
       DepartmentActions: bindActionCreators({ ...DepartmentActions }, dispatch),
       UserActions: bindActionCreators({ ...UserActions }, dispatch),
       StaffActions: bindActionCreators({ ...StaffActions }, dispatch),
+      StokGrupActions: bindActionCreators({ ...StokGrupActions }, dispatch),
     };
   }
 )(LoginScreenComp);
