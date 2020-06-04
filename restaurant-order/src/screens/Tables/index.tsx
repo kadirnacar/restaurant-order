@@ -69,7 +69,10 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
                     backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)`,
                   },
                 ]}
-                onPress={async () => {}}
+                onPress={async () => {
+                  await this.props.DepartmentActions.setCurrentTable(item);
+
+                }}
               >
                 <Text style={style.buttonText}>{dep.TABLENO}</Text>
               </TouchableHighlight>

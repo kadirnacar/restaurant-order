@@ -6,12 +6,14 @@ export enum Actions {
     ReceiveDepartmentItems = "RECEIVE_DEPARTMENT_ITEMS",
     RequestTables = "REQUEST_TABLES",
     ReceiveTables = "RECEIVE_TABLES",
-    SetCurrent = "SET_CURRENT_DEPARTMENT"
+    SetCurrent = "SET_CURRENT_DEPARTMENT",
+    SetCurrentTable = "SET_CURRENT_TABLE"
 }
 
 export interface DepartmentState extends IBaseReducer {
     // items?: IDepartment[];
     current: IDepartment;
+    currentTable: ITable;
     [key: number]: IDepartment;
 }
 
@@ -36,4 +38,9 @@ export interface IReceiveTablesAction {
 export interface ISetCurrentAction {
     type: Actions.SetCurrent;
     payload: IDepartment;
+}
+
+export interface ISetCurrentTableAction {
+    type: Actions.SetCurrentTable;
+    payload: ITable;
 }

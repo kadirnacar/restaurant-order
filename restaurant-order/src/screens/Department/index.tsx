@@ -31,12 +31,15 @@ export class DepartmentScreenComp extends Component<
     this.scheme.from_hue(10).scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
     this.state = { departments: [] };
+    this.props.navigation.addListener("blur", async (e) => {
+      await this.props.DepartmentActions.setCurrent(null);
+      await this.props.DepartmentActions.setCurrentTable(null);
+    });
   }
   scheme: ColorScheme;
   colors: any;
-
+ 
   async componentDidMount() {
-    await this.props.DepartmentActions.setCurrent(null);
     const userDeps = Object.keys(this.props.Department)
       .filter(
         (x) =>

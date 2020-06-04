@@ -76,7 +76,7 @@ export class LoginScreenComp extends Component<Props, LoginState> {
       await this.props.DepartmentActions.getItems();
       await this.props.DepartmentActions.getTables();
       await this.props.StokGrupActions.getItems();
-      this.props.navigation.navigate("Home");
+      this.props.navigation.navigate("Department");
       this.setState({ isRequest: false });
     }
   }

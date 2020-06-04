@@ -1,4 +1,4 @@
-import { IDepartment } from "@models";
+import { IDepartment, ITable } from "@models";
 import { DepartmentService } from "@services";
 import { Alert } from "react-native";
 import { batch } from "react-redux";
@@ -52,5 +52,8 @@ export const actionCreators = {
     },
     setCurrent: (item: IDepartment) => async (dispatch, getState) => {
         await dispatch({ type: Actions.SetCurrent, payload: item });
+    },
+    setCurrentTable: (item: ITable) => async (dispatch, getState) => {
+        await dispatch({ type: Actions.SetCurrentTable, payload: item });
     }
 }
