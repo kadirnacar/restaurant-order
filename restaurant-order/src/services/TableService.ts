@@ -1,5 +1,5 @@
 import config from '@config';
-import { ITable, ICheck } from '@models';
+import { ITable, ICheck, ICheckDetail } from '@models';
 import { AngusResponse } from './AngusResponse';
 import { ServiceBase } from "./ServiceBase";
 
@@ -49,54 +49,21 @@ export class TableService extends ServiceBase {
         return result;
     }
     
-    public static async getTableAdisyon(departmentCode: string, masaNo: string) {
-        var result = await this.requestJson<AngusResponse<any>>({
+    public static async getCheckDetail(checkId: number) {
+        var result = await this.requestJson<AngusResponse<ICheckDetail>>({
             url: `${config.restUrl}`,
             method: "POST",
             data: {
-                "Object": "QA_EASYPOS_CHECKDETAIL",
+                "Object": "QPOS_CHECK_DETAIL",
                 "Action": "Select",
                 "Select": [
-                    "ADET",
-                    "ACIKLAMA",
-                    "STOKID"
+                  
                 ],
                 "Where": [
                     {
-                        "Column": "MASANO",
+                        "Column": "CHECKID",
                         "Operator": "=",
-                        "Value": masaNo
-                    },
-                    {
-                        "Column": "DEPTKODU",
-                        "Operator": "=",
-                        "Value": departmentCode
-                    },
-                    {
-                        "Column": "ADET",
-                        "Operator": ">",
-                        "Value": 0
-                    }
-                ],
-                "Joins": [
-
-                    {
-                        "Object": "STOK",
-                        "Key": "STOKID",
-                        "Field": "STOKID",
-                        "Fields": [
-                            "PORSIYONLUSATIS"
-                        ]
-                    }
-                ],
-                "OrderBy": [
-                    {
-                        "Column": "BEKLET",
-                        "Direction": "ASC"
-                    },
-                    {
-                        "Column": "SIRA",
-                        "Direction": "ASC"
+                        "Value": checkId
                     }
                 ],
                 "Paging": {

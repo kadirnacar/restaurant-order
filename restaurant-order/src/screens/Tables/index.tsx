@@ -30,6 +30,9 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
     this.scheme.scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
     this.state = { tables: [] };
+    this.props.navigation.addListener("focus", async (e) => {
+      await this.props.DepartmentActions.setCurrentTable(null);
+    });
   }
   scheme: ColorScheme;
   colors: any;

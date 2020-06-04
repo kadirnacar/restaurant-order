@@ -1,4 +1,4 @@
-import { IDepartment, ITable, ICheck } from '@models';
+import { IDepartment, ITable, ICheck, ICheckDetail } from '@models';
 import { IBaseReducer } from '../BaseReducer';
 
 export enum Actions {
@@ -8,6 +8,8 @@ export enum Actions {
     ReceiveTables = "RECEIVE_TABLES",
     RequestTablesChecks = "REQUEST_TABLES_CHECKS",
     ReceiveTablesChecks = "RECEIVE_TABLES_CHECKS",
+    RequestTablesCheckDetail = "REQUEST_TABLES_CHECK_DETAIL",
+    ReceiveTablesCheckDetail = "RECEIVE_TABLES_CHECK_DETAIL",
     SetCurrent = "SET_CURRENT_DEPARTMENT",
     SetCurrentTable = "SET_CURRENT_TABLE"
 }
@@ -44,6 +46,15 @@ export interface IRequestTablesChecksAction {
 export interface IReceiveTablesChecksAction {
     type: Actions.ReceiveTablesChecks;
     payload: ICheck[];
+}
+
+export interface IRequestTablesCheckDetailAction {
+    type: Actions.RequestTablesCheckDetail;
+}
+
+export interface IReceiveTablesCheckDetailAction {
+    type: Actions.ReceiveTablesCheckDetail;
+    payload: ICheckDetail[];
 }
 
 export interface ISetCurrentAction {

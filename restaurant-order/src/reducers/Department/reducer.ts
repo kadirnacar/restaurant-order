@@ -4,12 +4,14 @@ import {
   DepartmentState,
   IReceiveDepartmentItemsAction,
   IReceiveTablesAction,
-  IRequestTablesAction,
-  ISetCurrentAction,
+  IReceiveTablesCheckDetailAction,
   IReceiveTablesChecksAction,
-  IRequestTablesChecksAction,
-  ISetCurrentTableAction,
   IRequestDepartmentItemsAction,
+  IRequestTablesAction,
+  IRequestTablesCheckDetailAction,
+  IRequestTablesChecksAction,
+  ISetCurrentAction,
+  ISetCurrentTableAction,
 } from "./state";
 
 const unloadedState: DepartmentState = {
@@ -24,6 +26,8 @@ export type KnownAction =
   | IRequestTablesAction
   | IReceiveTablesChecksAction
   | IRequestTablesChecksAction
+  | IReceiveTablesCheckDetailAction
+  | IRequestTablesCheckDetailAction
   | ISetCurrentTableAction
   | ISetCurrentAction;
 
@@ -85,6 +89,22 @@ export const reducer = (
       }
       return { ...currentState };
     case Actions.RequestTablesChecks:
+      currentState.isRequest = true;
+      return { ...currentState };
+    case Actions.ReceiveTablesCheckDetail:
+      currentState.isRequest = false;
+      if (currentState.currentTable && currentState.currentTable.Check) {
+        currentState.currentTable.Check.CheckDetails = null;
+      }
+      if (
+        action.payload &&
+        currentState.currentTable &&
+        currentState.currentTable.Check
+      ) {
+        currentState.currentTable.Check.CheckDetails = action.payload;
+      }
+      return { ...currentState };
+    case Actions.RequestTablesCheckDetail:
       currentState.isRequest = true;
       return { ...currentState };
     case Actions.SetCurrent:

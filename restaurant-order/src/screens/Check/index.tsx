@@ -6,7 +6,7 @@ import { ApplicationState } from "@store";
 import { colors, hexToRgb } from "@tools";
 import ColorScheme from "color-scheme";
 import React, { Component } from "react";
-import { Dimensions, FlatList, StyleSheet, Text } from "react-native";
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -35,41 +35,103 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
   colors: any;
 
   async componentDidMount() {
-    
-    this.setState({ tables: [] });
+    if (this.props.Department.currentTable.Check) {
+      await this.props.DepartmentActions.getCheckDetail(
+        this.props.Department.currentTable.Check.CHECKID
+      );
+    }
   }
   render() {
     return (
       <BackImage>
         <LoaderSpinner showLoader={this.props.Department.isRequest} />
         <FlatList
+          keyboardDismissMode="on-drag"
           style={{ flex: 1 }}
-          data={this.state.tables}
+          keyboardShouldPersistTaps="always"
+          updateCellsBatchingPeriod={10}
+          windowSize={20}
+          maxToRenderPerBatch={20}
+          initialNumToRender={10}
+          removeClippedSubviews={true}
+          data={
+            this.props.Department.currentTable.Check
+              ? this.props.Department.currentTable.Check.CheckDetails
+              : []
+          }
           renderItem={({ item, index }) => {
             const color = hexToRgb(this.colors[index % 12]);
             const dep = item; //this.props.Department.current.Checks[item];
             return (
-              <TouchableHighlight
-                underlayColor="#ffffff00"
+              <View
                 key={index}
                 style={[
-                  style.button,
                   {
                     backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)`,
+                    padding: 3,
+                    marginVertical: 3,
                   },
                 ]}
-                onPress={async () => {
-                  // await this.props.DepartmentActions.setCurrentCheck(item);
-
-                }}
               >
-                <Text style={style.buttonText}>{dep.TABLENO}</Text>
-              </TouchableHighlight>
+                <Text style={{ color: colors.textColor, fontSize: 20 }}>
+                  {dep.PRODUCTNAME}
+                </Text>
+                <Text
+                  style={{
+                    color: colors.textColor,
+                    fontSize: 14,
+                    textAlign: "right",
+                  }}
+                >
+                  {dep.QUANTITY} X{" "}
+                  {dep.LINE_MID_UNITPRICE
+                    ? dep.LINE_MID_UNITPRICE.toFixed(2)
+                    : (0).toFixed(2)}{" "}
+                  ={" "}
+                  {dep.LINE_MID_TOTAL
+                    ? dep.LINE_MID_TOTAL.toFixed(2)
+                    : (0).toFixed(2)}
+                </Text>
+                {dep.NOTES ? (
+                  <Text style={{ color: colors.textColor, fontSize: 14 }}>
+                    {dep.NOTES}
+                  </Text>
+                ) : null}
+              </View>
             );
           }}
-          numColumns={3}
           keyExtractor={(item, index) => index.toString()}
         />
+        <View style={{ height: 50, flexDirection: "row" }}>
+          <Text
+            style={{
+              width: "50%",
+              alignSelf: "flex-end",
+              color: colors.textColor,
+              fontSize: 20,
+              lineHeight: 50,
+            }}
+          >
+            Toplam
+          </Text>
+          <Text
+            style={{
+              width: "50%",
+              // alignContent: "flex-end",
+              // alignItems: "flex-end",
+              alignSelf: "flex-end",
+              textAlign: "right",
+              color: colors.textColor,
+              fontSize: 20,
+              lineHeight: 50,
+            }}
+          >
+            {this.props.Department.currentTable.Check &&
+            this.props.Department.currentTable.Check.CHECKTOTAL
+              ? this.props.Department.currentTable.Check.CHECKTOTAL.toFixed(2)
+              : (0).toFixed(2)}
+          </Text>
+        </View>
       </BackImage>
     );
   }
