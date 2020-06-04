@@ -117,8 +117,6 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
           <Text
             style={{
               width: "50%",
-              // alignContent: "flex-end",
-              // alignItems: "flex-end",
               alignSelf: "flex-end",
               textAlign: "right",
               color: colors.textColor,
