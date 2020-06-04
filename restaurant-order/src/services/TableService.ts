@@ -1,5 +1,5 @@
 import config from '@config';
-import { ITable } from '@models';
+import { ITable, ICheck } from '@models';
 import { AngusResponse } from './AngusResponse';
 import { ServiceBase } from "./ServiceBase";
 
@@ -16,42 +16,27 @@ export class TableService extends ServiceBase {
                     "Current": 1,
                     "ItemsPerPage": 9999
                 }
-                // "Where": [{
-                //     "Column": "DEPID",
-                //     "Operator": "=",
-                //     "Value": depId
-                // }]
             }
         });
 
         return result;
     }
 
-    public static async getOpenedTables(departmentCode: string) {
-        var result = await this.requestJson<AngusResponse<ITable>>({
+    public static async getOpenedTables(depId: number) {
+        var result = await this.requestJson<AngusResponse<ICheck>>({
             url: `${config.restUrl}`,
             method: "POST",
             data: {
-                "Object": "QA_EASYPOS_ACIK_MASALAR",
+                "Object": "QPOS_OPEN_TABLES",
                 "Action": "Select",
                 "Select": [
-                    "MASANO",
-                    "MASAADI",
-                    "SEZLONG",
-                    "TOPLAM",
-                    "KISI",
-                    "GADI",
-                    "ASAATI",
-                    "STATU",
-                    "SONSIPSAATI",
-                    "ILGIZAMANI",
-                    "FISCOUNTER"
+                 
                 ],
                 "Where": [
                     {
-                        "Column": "DEPKODU",
+                        "Column": "DEPID",
                         "Operator": "=",
-                        "Value": departmentCode
+                        "Value": depId
                     }
                 ],
                 "Paging": {

@@ -6,6 +6,8 @@ import {
   IReceiveTablesAction,
   IRequestTablesAction,
   ISetCurrentAction,
+  IReceiveTablesChecksAction,
+  IRequestTablesChecksAction,
   ISetCurrentTableAction,
   IRequestDepartmentItemsAction,
 } from "./state";
@@ -20,6 +22,8 @@ export type KnownAction =
   | IRequestDepartmentItemsAction
   | IReceiveTablesAction
   | IRequestTablesAction
+  | IReceiveTablesChecksAction
+  | IRequestTablesChecksAction
   | ISetCurrentTableAction
   | ISetCurrentAction;
 
@@ -57,6 +61,30 @@ export const reducer = (
       }
       return { ...currentState };
     case Actions.RequestTables:
+      currentState.isRequest = true;
+      return { ...currentState };
+    case Actions.ReceiveTablesChecks:
+      currentState.isRequest = false;
+      Object.keys(currentState.current.Tables).forEach((x) => {
+        currentState.current.Tables[parseInt(x)].Check = null;
+      });
+      if (action.payload) {
+        action.payload.forEach((check) => {
+          if (currentState.current && currentState.current.Tables) {
+            const tableId = Object.keys(currentState.current.Tables).find(
+              (x) =>
+                currentState.current.Tables[parseInt(x)].TABLENO ==
+                check.TABLENO
+            );
+            if (tableId) {
+              const table = currentState.current.Tables[parseInt(tableId)];
+              table.Check = check;
+            }
+          }
+        });
+      }
+      return { ...currentState };
+    case Actions.RequestTablesChecks:
       currentState.isRequest = true;
       return { ...currentState };
     case Actions.SetCurrent:

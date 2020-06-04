@@ -3,7 +3,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { DepartmentScreen, LoginScreen, TablesScreen } from "@screens";
+import { DepartmentScreen, LoginScreen, TablesScreen,ChecksScreen } from "@screens";
 import { colors } from "@tools";
 import * as React from "react";
 
@@ -89,7 +89,10 @@ export const AppNavigation = () => {
         <Stack.Screen
           name="Tables"
           component={TablesScreen}
-          //   options={{ headerRight: null }}
+        />
+         <Stack.Screen
+          name="Check"
+          component={ChecksScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

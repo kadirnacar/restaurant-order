@@ -1,73 +1,53 @@
 import { BackImage, LoaderSpinner } from "@components";
+import { ICheck } from "@models";
 import { NavigationProp } from "@react-navigation/native";
 import { DepartmentActions } from "@reducers";
 import { ApplicationState } from "@store";
 import { colors, hexToRgb } from "@tools";
 import ColorScheme from "color-scheme";
 import React, { Component } from "react";
-import { FlatList, StyleSheet, Text } from "react-native";
+import { Dimensions, FlatList, StyleSheet, Text } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+const { width } = Dimensions.get("window");
 
-interface DepartmentScreenState {
-  departments?: number[];
+interface ChecksScreenState {
+  tables?: ICheck[];
 }
 
-interface DepartmentProps {
+interface ChecksProps {
   DepartmentActions: typeof DepartmentActions;
   navigation: NavigationProp<any>;
 }
 
-type Props = DepartmentProps & ApplicationState;
+type Props = ChecksProps & ApplicationState;
 
-export class DepartmentScreenComp extends Component<
-  Props,
-  DepartmentScreenState
-> {
+export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
   constructor(props) {
     super(props);
     this.scheme = new ColorScheme();
-    this.scheme.from_hue(10).scheme("analogic").variation("hard");
+    this.scheme.scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
-    this.state = { departments: [] };
-    this.props.navigation.addListener("focus", async (e) => {
-      await this.props.DepartmentActions.setCurrent(null);
-      await this.props.DepartmentActions.setCurrentTable(null);
-    });
+    this.state = { tables: [] };
   }
   scheme: ColorScheme;
   colors: any;
- 
+
   async componentDidMount() {
-    const userDeps = Object.keys(this.props.Department)
-      .filter(
-        (x) =>
-          !isNaN(parseInt(x)) &&
-          (this.props.Staff.current && this.props.Staff.current.STAFFDEPS
-            ? this.props.Staff.current.STAFFDEPS.filter(
-                (stf) => stf.DEPID == parseInt(x)
-              ).length > 0
-            : true)
-      )
-      .map((depId) => parseInt(depId));
-    if (userDeps.length == 1) {
-      const dep = this.props.Department[userDeps[0]];
-      this.props.DepartmentActions.setCurrent(dep);
-      this.props.navigation.navigate("Tables");
-    }
-    this.setState({ departments: userDeps });
+    
+    this.setState({ tables: [] });
   }
   render() {
     return (
       <BackImage>
         <LoaderSpinner showLoader={this.props.Department.isRequest} />
         <FlatList
-          data={this.state.departments}
           style={{ flex: 1 }}
+          data={this.state.tables}
           renderItem={({ item, index }) => {
             const color = hexToRgb(this.colors[index % 12]);
-            const dep = this.props.Department[item];
+            const dep = item; //this.props.Department.current.Checks[item];
             return (
               <TouchableHighlight
                 underlayColor="#ffffff00"
@@ -79,15 +59,15 @@ export class DepartmentScreenComp extends Component<
                   },
                 ]}
                 onPress={async () => {
-                  await this.props.DepartmentActions.setCurrent(dep);
-                  this.props.navigation.navigate("Tables");
+                  // await this.props.DepartmentActions.setCurrentCheck(item);
+
                 }}
               >
-                <Text style={style.buttonText}>{dep.DEPARTMENTNAME}</Text>
+                <Text style={style.buttonText}>{dep.TABLENO}</Text>
               </TouchableHighlight>
             );
           }}
-          numColumns={1}
+          numColumns={3}
           keyExtractor={(item, index) => index.toString()}
         />
       </BackImage>
@@ -99,14 +79,20 @@ const style = StyleSheet.create({
     flex: 1,
     borderColor: colors.borderColor,
     backgroundColor: colors.borderColor,
-    borderWidth: 4,
-    margin: 5,
-    padding: 10,
     borderRadius: 25,
+    flexDirection: "row",
+    borderWidth: 4,
+    margin: 10,
+    width: width / 3 - 20,
+    height: width / 3 - 20,
+    alignSelf: "center",
+    alignItems: "center",
+    alignContent: "center",
   },
   buttonText: {
     flex: 1,
-    fontSize: 18,
+
+    fontSize: 26,
     fontWeight: "bold",
     color: colors.textColor,
     textAlignVertical: "center",
@@ -114,11 +100,11 @@ const style = StyleSheet.create({
   },
 });
 
-export const DepartmentScreen = connect(
+export const ChecksScreen = connect(
   (state: ApplicationState) => state,
   (dispatch) => {
     return {
       DepartmentActions: bindActionCreators({ ...DepartmentActions }, dispatch),
     };
   }
-)(DepartmentScreenComp);
+)(ChecksScreenComp);

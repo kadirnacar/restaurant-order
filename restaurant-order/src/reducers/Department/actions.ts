@@ -50,6 +50,28 @@ export const actionCreators = {
         });
         return isSuccess;
     },
+    getChecks: (depId:number) => async (dispatch, getState) => {
+        let isSuccess: boolean = false;
+        await batch(async () => {
+            await dispatch({ type: Actions.RequestTablesChecks });
+            var result = await TableService.getOpenedTables(depId);
+            var tables = result.value && result.value.ResultSets && result.value.ResultSets.length > 0 ? result.value.ResultSets[0] : [];
+            
+            await dispatch({
+                type: Actions.ReceiveTablesChecks,
+                payload: tables
+            });
+            
+            if (result.hasErrors()) {
+                Alert.alert(result.errors[0]);
+                isSuccess = false;
+                return;
+            }
+
+            isSuccess = true;
+        });
+        return isSuccess;
+    },
     setCurrent: (item: IDepartment) => async (dispatch, getState) => {
         await dispatch({ type: Actions.SetCurrent, payload: item });
     },
