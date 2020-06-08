@@ -82,6 +82,14 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
                 ]}
                 onPress={async () => {
                   await this.props.DepartmentActions.setCurrentTable(item);
+                  if (
+                    this.props.Department.currentTable &&
+                    this.props.Department.currentTable.Check
+                  ) {
+                    await this.props.DepartmentActions.getCheckDetail(
+                      this.props.Department.currentTable.Check.CHECKID
+                    );
+                  }
                   this.props.navigation.navigate("Check");
                 }}
               >

@@ -35,11 +35,7 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
   colors: any;
 
   async componentDidMount() {
-    if (this.props.Department.currentTable.Check) {
-      await this.props.DepartmentActions.getCheckDetail(
-        this.props.Department.currentTable.Check.CHECKID
-      );
-    }
+   
   }
   render() {
     return (
@@ -55,7 +51,7 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
           initialNumToRender={10}
           removeClippedSubviews={true}
           data={
-            this.props.Department.currentTable.Check
+            this.props.Department.currentTable && this.props.Department.currentTable.Check
               ? this.props.Department.currentTable.Check.CheckDetails
               : []
           }
@@ -124,7 +120,7 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
               lineHeight: 50,
             }}
           >
-            {this.props.Department.currentTable.Check &&
+            {this.props.Department.currentTable && this.props.Department.currentTable.Check &&
             this.props.Department.currentTable.Check.CHECKTOTAL
               ? this.props.Department.currentTable.Check.CHECKTOTAL.toFixed(2)
               : (0).toFixed(2)}
