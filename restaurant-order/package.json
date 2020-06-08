@@ -17,6 +17,7 @@
     "color-scheme": "^1.0.1",
     "expo": "~37.0.7",
     "json-to-url": "^1.0.5",
+    "lottie-react-native": "^3.4.0",
     "moment": "^2.24.0",
     "path": "^0.12.7",
     "react": "~16.13.1",

@@ -1,5 +1,4 @@
 import { BackImage, LoaderSpinner } from "@components";
-import { ICheck } from "@models";
 import { NavigationProp } from "@react-navigation/native";
 import { DepartmentActions } from "@reducers";
 import { ApplicationState } from "@store";
@@ -12,18 +11,18 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 const { width } = Dimensions.get("window");
 
-interface ChecksScreenState {
-  tables?: ICheck[];
+interface ProductScreenState {
+  tables?: any[];
 }
 
-interface ChecksProps {
+interface ProductProps {
   DepartmentActions: typeof DepartmentActions;
   navigation: NavigationProp<any>;
 }
 
-type Props = ChecksProps & ApplicationState;
+type Props = ProductProps & ApplicationState;
 
-export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
+export class ProductScreenComp extends Component<Props, ProductScreenState> {
   constructor(props) {
     super(props);
     this.scheme = new ColorScheme();
@@ -35,11 +34,7 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
   colors: any;
 
   async componentDidMount() {
-    if (this.props.Department.currentTable.Check) {
-      await this.props.DepartmentActions.getCheckDetail(
-        this.props.Department.currentTable.Check.CHECKID
-      );
-    }
+   
   }
   render() {
     return (
@@ -55,13 +50,11 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
           initialNumToRender={10}
           removeClippedSubviews={true}
           data={
-            this.props.Department.currentTable.Check
-              ? this.props.Department.currentTable.Check.CheckDetails
-              : []
+            []
           }
           renderItem={({ item, index }) => {
             const color = hexToRgb(this.colors[index % 12]);
-            const dep = item; //this.props.Department.current.Checks[item];
+            const dep = item; //this.props.Department.current.Product[item];
             return (
               <View
                 key={index}
@@ -124,10 +117,7 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
               lineHeight: 50,
             }}
           >
-            {this.props.Department.currentTable.Check &&
-            this.props.Department.currentTable.Check.CHECKTOTAL
-              ? this.props.Department.currentTable.Check.CHECKTOTAL.toFixed(2)
-              : (0).toFixed(2)}
+            {(0).toFixed(2)}
           </Text>
         </View>
       </BackImage>
@@ -160,11 +150,11 @@ const style = StyleSheet.create({
   },
 });
 
-export const ChecksScreen = connect(
+export const ProductScreen = connect(
   (state: ApplicationState) => state,
   (dispatch) => {
     return {
       DepartmentActions: bindActionCreators({ ...DepartmentActions }, dispatch),
     };
   }
-)(ChecksScreenComp);
+)(ProductScreenComp);
