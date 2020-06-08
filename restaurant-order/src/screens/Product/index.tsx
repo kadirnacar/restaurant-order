@@ -5,10 +5,21 @@ import { ApplicationState } from "@store";
 import { colors, hexToRgb } from "@tools";
 import ColorScheme from "color-scheme";
 import React, { Component } from "react";
-import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
-import { TouchableHighlight } from "react-native-gesture-handler";
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+} from "react-native";
+import {
+  TouchableHighlight,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { FontAwesome5 } from "@expo/vector-icons";
 const { width } = Dimensions.get("window");
 
 interface ProductScreenState {
@@ -33,9 +44,7 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
   scheme: ColorScheme;
   colors: any;
 
-  async componentDidMount() {
-   
-  }
+  async componentDidMount() {}
   render() {
     return (
       <BackImage>
@@ -49,12 +58,10 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
           maxToRenderPerBatch={20}
           initialNumToRender={10}
           removeClippedSubviews={true}
-          data={
-            []
-          }
+          data={this.props.Stok.stoks ? this.props.Stok.stoks : []}
           renderItem={({ item, index }) => {
             const color = hexToRgb(this.colors[index % 12]);
-            const dep = item; //this.props.Department.current.Product[item];
+
             return (
               <View
                 key={index}
@@ -62,64 +69,113 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                   {
                     backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)`,
                     padding: 3,
+                    flexDirection: "row",
                     marginVertical: 3,
                   },
                 ]}
               >
-                <Text style={{ color: colors.textColor, fontSize: 20 }}>
-                  {dep.PRODUCTNAME}
-                </Text>
-                <Text
+                <Image
                   style={{
-                    color: colors.textColor,
-                    fontSize: 14,
-                    textAlign: "right",
+                    flexDirection: "column",
+                    width: 75,
+                    height: 75,
+                    marginRight: 5,
+                    borderRadius: 10,
+                    borderWidth: 5,
+                    borderColor: colors.borderColor,
                   }}
-                >
-                  {dep.QUANTITY} X{" "}
-                  {dep.LINE_MID_UNITPRICE
-                    ? dep.LINE_MID_UNITPRICE.toFixed(2)
-                    : (0).toFixed(2)}{" "}
-                  ={" "}
-                  {dep.LINE_MID_TOTAL
-                    ? dep.LINE_MID_TOTAL.toFixed(2)
-                    : (0).toFixed(2)}
-                </Text>
-                {dep.NOTES ? (
-                  <Text style={{ color: colors.textColor, fontSize: 14 }}>
-                    {dep.NOTES}
-                  </Text>
-                ) : null}
+                  source={{ uri: item.PHOTOURL }}
+                />
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={{
+                        color: colors.textColor,
+                        fontSize: 20,
+                        flex: 3,
+                        flexDirection: "column",
+                      }}
+                    >
+                      {item.NAME}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.textColor,
+                        flex: 1,
+                        flexDirection: "column",
+                        fontSize: 16,
+                        alignContent: "flex-end",
+                        alignItems: "flex-end",
+                        alignSelf: "flex-start",
+                        textAlign: "right",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      {item.PRICE}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      alignItems: "flex-end",
+                      justifyContent: "flex-end",
+                      flex: 1,
+                      flexDirection: "row",
+                      padding: 3,
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={{
+                        borderRadius: 10,
+                        padding: 5,
+                        borderWidth: 2,
+                        borderColor: colors.borderColor,
+                        backgroundColor: colors.color3,
+                      }}
+                    >
+                      <FontAwesome5
+                        name="minus"
+                        size={25}
+                        color={colors.inputTextColor}
+                      />
+                    </TouchableOpacity>
+                    <View
+                      style={{
+                        borderRadius: 10,
+                        padding: 5,
+                        borderWidth: 2,
+                        minWidth: 80,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        alignSelf: "center",
+                        borderColor: colors.borderColor,
+                        backgroundColor: colors.inputTextColor,
+                      }}
+                    >
+                      <Text style={{ fontSize: 18 }}>0</Text>
+                    </View>
+                    <TouchableOpacity
+                      style={{
+                        borderRadius: 10,
+                        padding: 5,
+                        borderWidth: 2,
+                        borderColor: colors.borderColor,
+                        backgroundColor: colors.color3,
+                      }}
+                    >
+                      <FontAwesome5
+                        name="plus"
+                        size={25}
+                        color={colors.inputTextColor}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             );
           }}
           keyExtractor={(item, index) => index.toString()}
         />
-        <View style={{ height: 50, flexDirection: "row" }}>
-          <Text
-            style={{
-              width: "50%",
-              alignSelf: "flex-end",
-              color: colors.textColor,
-              fontSize: 20,
-              lineHeight: 50,
-            }}
-          >
-            Toplam
-          </Text>
-          <Text
-            style={{
-              width: "50%",
-              alignSelf: "flex-end",
-              textAlign: "right",
-              color: colors.textColor,
-              fontSize: 20,
-              lineHeight: 50,
-            }}
-          >
-            {(0).toFixed(2)}
-          </Text>
-        </View>
       </BackImage>
     );
   }

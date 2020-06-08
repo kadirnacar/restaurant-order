@@ -12,7 +12,6 @@ export class StokService extends ServiceBase {
                 "Object": "SP_POS_GETPOSDATA"
             }
         });
-console.log(result)
         return result;
     }
 }
