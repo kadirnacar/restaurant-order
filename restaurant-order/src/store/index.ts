@@ -3,8 +3,8 @@ import {
   DepartmentState,
   StaffReducer,
   StaffState,
-  StokGrupReducer,
-  StokGrupState,
+  StokReducer,
+  StokState,
   UserReducer,
   UserState,
 } from "@reducers";
@@ -15,14 +15,14 @@ export interface ApplicationState {
   User: UserState;
   Department: DepartmentState;
   Staff: StaffState;
-  StokGrup: StokGrupState;
+  Stok: StokState;
 }
 
 export const reducers = {
   User: UserReducer,
   Department: DepartmentReducer,
   Staff: StaffReducer,
-  StokGrup: StokGrupReducer,
+  Stok: StokReducer,
 };
 
 export interface AppThunkAction<TAction> {

@@ -98,7 +98,7 @@ export const actionCreators = {
         result.value.ResultSets.length > 0
           ? result.value.ResultSets[0]
           : [];
-
+console.log(tables);
       await dispatch({
         type: Actions.ReceiveTablesCheckDetail,
         payload: tables,

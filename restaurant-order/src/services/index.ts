@@ -3,5 +3,5 @@ export { DepartmentService } from './DepartmentService';
 export { StaffService } from './StaffService';
 export { UserService } from './UserService';
 export { TableService } from './TableService';
-export { StokGrupService } from './StokGrupService';
+export { StokService } from './StokService';
 
