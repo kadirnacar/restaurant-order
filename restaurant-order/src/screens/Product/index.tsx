@@ -1,10 +1,11 @@
 import { BackImage, LoaderSpinner } from "@components";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { IStok } from "@models";
+import { IStok, IStokGrup } from "@models";
 import { NavigationProp } from "@react-navigation/native";
 import { DepartmentActions } from "@reducers";
 import { ApplicationState } from "@store";
 import { colors, hexToRgb } from "@tools";
+import { distinct } from "@utils";
 import ColorScheme from "color-scheme";
 import fuzzysort from "fuzzysort";
 import React, { Component } from "react";
@@ -17,15 +18,17 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Drawer from "react-native-drawer-menu";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import SideMenu from "react-native-side-menu";
 
 const { width } = Dimensions.get("window");
 
 interface ProductScreenState {
   items?: IStok[];
+  groups?: IStokGrup[];
+  currentGroup?: number;
   showCategory?: boolean;
   search?: string;
 }
@@ -41,29 +44,38 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
   constructor(props) {
     super(props);
     this.scheme = new ColorScheme();
+    this.drawer = React.createRef();
     this.scheme.scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
-    this.state = { items: [], search: "", showCategory: false };
+    this.state = { items: [], search: "", showCategory: false, groups: [] };
   }
   scheme: ColorScheme;
   colors: any;
-
+  drawer: React.RefObject<any>;
   async componentDidMount() {
-    const source = this.props.Stok.stoks.filter((t) =>
-      this.props.Stok.stokDepartments && this.props.Department.current
-        ? this.props.Stok.stokDepartments.findIndex(
-            (d) =>
-              d.DEPID == this.props.Department.current.ID && d.PRODUCTID == t.ID
-          ) > -1
-        : false
-    );
-    // const groups = source.map((x) => x.STOKGRUPID).filter(distinct);
-    // this.setState({
-    //   source,
-    //   groupIds: groups,
-    // });
+    const source =
+      this.props.Stok && this.props.Stok.stoks
+        ? this.props.Stok.stoks.filter((t) =>
+            this.props.Stok.stokDepartments && this.props.Department.current
+              ? this.props.Stok.stokDepartments.findIndex(
+                  (d) =>
+                    d.DEPID == this.props.Department.current.ID &&
+                    d.PRODUCTID == t.ID
+                ) > -1
+              : false
+          )
+        : [];
+    const groupIds = source.map((x) => x.PRODUCTGROUPID).filter(distinct);
+    const groups =
+      this.props.Stok && this.props.Stok.stokGrups
+        ? this.props.Stok.stokGrups.filter(
+            (t) => groupIds.findIndex((d) => d == t.ID) > -1
+          )
+        : [];
+
     this.setState({
       items: source,
+      groups: groups,
     });
   }
   searchData(search: string) {
@@ -80,7 +92,106 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
     return (
       <BackImage>
         <LoaderSpinner showLoader={this.props.Department.isRequest} />
-        <SideMenu isOpen={this.state.showCategory} menuPosition="right">
+        <Drawer
+          ref={this.drawer}
+          drawerWidth={300}
+          drawerContent={
+            <View style={{ flex: 1, backgroundColor: colors.color2 }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: colors.textColor,
+                  flexDirection: "row",
+                  width: "100%",
+                  textAlign: "center",
+                }}
+              >
+                Ürün Kategorileri
+              </Text>
+              <FlatList
+                ListHeaderComponent={
+                  <TouchableOpacity
+                    style={[
+                      {
+                        padding: 5,
+                        flexDirection: "row",
+                        marginVertical: 3,
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors.borderColor,
+                        backgroundColor: !this.state.currentGroup
+                          ? colors.borderColor
+                          : null,
+                      },
+                    ]}
+                    onPress={() => {
+                      this.setState({ currentGroup: null });
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: colors.textColor,
+                        fontSize: 18,
+                      }}
+                    >
+                      Tümü
+                    </Text>
+                  </TouchableOpacity>
+                }
+                keyboardDismissMode="on-drag"
+                style={{ flex: 1, padding: 10 }}
+                keyboardShouldPersistTaps="always"
+                updateCellsBatchingPeriod={10}
+                windowSize={20}
+                maxToRenderPerBatch={20}
+                initialNumToRender={10}
+                removeClippedSubviews={true}
+                data={this.state.groups ? this.state.groups : []}
+                renderItem={({ item, index }) => {
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        {
+                          padding: 3,
+                          borderBottomColor: colors.borderColor,
+                          flexDirection: "row",
+                          marginVertical: 3,
+                          borderBottomWidth: 1,
+                          backgroundColor:
+                            this.state.currentGroup == item.ID
+                              ? colors.borderColor
+                              : null,
+                        },
+                      ]}
+                      onPress={() => {
+                        this.setState({ currentGroup: item.ID });
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.textColor,
+                          fontSize: 18,
+                        }}
+                      >
+                        {item.NAME}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          }
+          type={Drawer.types.Overlay}
+          drawerPosition={Drawer.positions.Right}
+          onDrawerOpen={() => {
+            this.setState({ showCategory: true });
+          }}
+          onDrawerClose={() => {
+            this.setState({ showCategory: false });
+          }}
+        >
           <FlatList
             keyboardDismissMode="on-drag"
             style={{ flex: 1 }}
@@ -90,13 +201,16 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
             maxToRenderPerBatch={20}
             initialNumToRender={10}
             removeClippedSubviews={true}
-            data={
-              this.state.items && this.state.search
-                ? this.searchData(this.state.search)
-                : this.state.items
-                ? this.state.items
-                : []
-            }
+            data={(this.state.items && this.state.search
+              ? this.searchData(this.state.search)
+              : this.state.items
+              ? this.state.items
+              : []
+            ).filter((x) =>
+              this.state.currentGroup
+                ? x.PRODUCTGROUPID == this.state.currentGroup
+                : true
+            )}
             renderItem={({ item, index }) => {
               const color = hexToRgb(this.colors[index % 12]);
 
@@ -230,43 +344,49 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
             }}
             keyExtractor={(item, index) => index.toString()}
           />
-          <View style={{ flexDirection: "row" }}>
-            <TextInput
-              placeholder="Ara..."
-              value={this.state.search}
-              placeholderTextColor={colors.primaryButtonTextColor}
-              style={style.buttonText}
-              clearButtonMode="always"
-              autoFocus={true}
-              clearTextOnFocus
-              onChangeText={(text) => {
-                this.setState({ search: text });
-              }}
-            />
-            <TouchableOpacity
-              style={{
-                padding: 5,
-                backgroundColor: colors.color1,
-              }}
-              onPress={() => {
-                this.setState({ search: "" });
-              }}
-            >
-              <FontAwesome5 name="times" size={35} color={"#ffffff"} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                padding: 5,
-                backgroundColor: colors.color1,
-              }}
-              onPress={() => {
-                this.setState({ showCategory: !this.state.showCategory });
-              }}
-            >
-              <FontAwesome5 name="bars" size={35} color={"#ffffff"} />
-            </TouchableOpacity>
-          </View>
-        </SideMenu>
+        </Drawer>
+
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            placeholder="Ara..."
+            value={this.state.search}
+            placeholderTextColor={colors.primaryButtonTextColor}
+            style={style.buttonText}
+            clearButtonMode="always"
+            autoFocus={true}
+            clearTextOnFocus
+            onChangeText={(text) => {
+              this.setState({ search: text, currentGroup: null });
+            }}
+          />
+          <TouchableOpacity
+            style={{
+              padding: 5,
+              backgroundColor: colors.color1,
+            }}
+            onPress={() => {
+              this.setState({ search: "", currentGroup: null });
+            }}
+          >
+            <FontAwesome5 name="times" size={35} color={"#ffffff"} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 5,
+              backgroundColor: colors.color1,
+            }}
+            onPress={() => {
+              if (this.state.showCategory) {
+                this.drawer.current.closeDrawer();
+              } else {
+                this.drawer.current.openDrawer();
+              }
+              // this.setState({ showCategory: !this.state.showCategory });
+            }}
+          >
+            <FontAwesome5 name="bars" size={35} color={"#ffffff"} />
+          </TouchableOpacity>
+        </View>
       </BackImage>
     );
   }
