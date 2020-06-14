@@ -1,6 +1,8 @@
-export { LoginScreen } from './Login';
-export { DepartmentScreen } from './Department';
-export { TablesScreen } from './Tables';
+export { BarcodeScreen } from './Barcode';
 export { ChecksScreen } from './Check';
-export { ProductScreen } from './Product';
+export { DepartmentScreen } from './Department';
+export { LoginScreen } from './Login';
 export { NfcScreen } from './Nfc';
+export { ProductScreen } from './Product';
+export { TablesScreen } from './Tables';
+

@@ -10,6 +10,7 @@ import {
   ChecksScreen,
   ProductScreen,
   NfcScreen,
+  BarcodeScreen,
 } from "@screens";
 import { colors } from "@tools";
 import * as React from "react";
@@ -49,7 +50,16 @@ const TableTabNavigator = () => {
           ),
         }}
       />
-
+      <Tab.Screen
+        name="Barcode"
+        component={BarcodeScreen}
+        options={{
+          tabBarLabel: "Barkod",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="barcode" color={color} size={size} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Pay"
         component={NfcScreen}
