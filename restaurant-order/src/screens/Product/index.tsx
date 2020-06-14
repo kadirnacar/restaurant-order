@@ -381,7 +381,6 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
               } else {
                 this.drawer.current.openDrawer();
               }
-              // this.setState({ showCategory: !this.state.showCategory });
             }}
           >
             <FontAwesome5 name="bars" size={35} color={"#ffffff"} />

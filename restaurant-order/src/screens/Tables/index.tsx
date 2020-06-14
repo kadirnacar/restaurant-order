@@ -20,11 +20,17 @@ import {
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { distinct } from "@utils";
+import Drawer from "react-native-drawer-menu";
 
 const { width } = Dimensions.get("window");
 interface TablesScreenState {
   tables?: ITable[];
   search?: string;
+
+  groups?: string[];
+  currentGroup?: string;
+  showCategory?: boolean;
 }
 
 interface TablesProps {
@@ -40,6 +46,7 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
     this.scheme = new ColorScheme();
     this.scheme.scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
+    this.drawer = React.createRef();
     this.state = { tables: [], search: "" };
     this.props.navigation.addListener("focus", async (e) => {
       await this.props.DepartmentActions.setCurrentTable(null);
@@ -47,12 +54,13 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
   }
   scheme: ColorScheme;
   colors: any;
+  drawer: React.RefObject<any>;
 
   async componentDidMount() {
     await this.props.DepartmentActions.getChecks(
       this.props.Department.current.ID
     );
-    const userDeps =
+    const userDeps: ITable[] =
       this.props.Department.current && this.props.Department.current.Tables
         ? Object.keys(this.props.Department.current.Tables)
             .map((id) => this.props.Department.current.Tables[id])
@@ -65,7 +73,8 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
               return 0;
             })
         : [];
-    this.setState({ tables: userDeps });
+    const groups = userDeps.map((x) => x.TABLEGROUP).filter(distinct);
+    this.setState({ tables: userDeps, groups: groups });
   }
   searchData(search: string) {
     return fuzzysort
@@ -81,83 +90,187 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
     return (
       <BackImage>
         <LoaderSpinner showLoader={this.props.Department.isRequest} />
-        <FlatList
-          style={{ flex: 1 }}
-          data={
-            this.state.tables && this.state.search
+        <Drawer
+          ref={this.drawer}
+          drawerWidth={300}
+          drawerContent={
+            <View style={{ flex: 1, backgroundColor: colors.color2 }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: colors.textColor,
+                  flexDirection: "row",
+                  width: "100%",
+                  textAlign: "center",
+                }}
+              >
+                Masa Grupları
+              </Text>
+              <FlatList
+                ListHeaderComponent={
+                  <TouchableOpacity
+                    style={[
+                      {
+                        padding: 5,
+                        flexDirection: "row",
+                        marginVertical: 3,
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors.borderColor,
+                        backgroundColor: !this.state.currentGroup
+                          ? colors.borderColor
+                          : null,
+                      },
+                    ]}
+                    onPress={() => {
+                      this.setState({ currentGroup: null });
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: colors.textColor,
+                        fontSize: 18,
+                      }}
+                    >
+                      Tümü
+                    </Text>
+                  </TouchableOpacity>
+                }
+                keyboardDismissMode="on-drag"
+                style={{ flex: 1, padding: 10 }}
+                keyboardShouldPersistTaps="always"
+                updateCellsBatchingPeriod={10}
+                windowSize={20}
+                maxToRenderPerBatch={20}
+                initialNumToRender={10}
+                removeClippedSubviews={true}
+                data={this.state.groups ? this.state.groups : []}
+                renderItem={({ item, index }) => {
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        {
+                          padding: 3,
+                          borderBottomColor: colors.borderColor,
+                          flexDirection: "row",
+                          marginVertical: 3,
+                          borderBottomWidth: 1,
+                          backgroundColor:
+                            this.state.currentGroup == item
+                              ? colors.borderColor
+                              : null,
+                        },
+                      ]}
+                      onPress={() => {
+                        this.setState({ currentGroup: item });
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.textColor,
+                          fontSize: 18,
+                        }}
+                      >
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          }
+          type={Drawer.types.Overlay}
+          drawerPosition={Drawer.positions.Right}
+          onDrawerOpen={() => {
+            this.setState({ showCategory: true });
+          }}
+          onDrawerClose={() => {
+            this.setState({ showCategory: false });
+          }}
+        >
+          <FlatList
+            style={{ flex: 1 }}
+            data={(this.state.tables && this.state.search
               ? this.searchData(this.state.search)
               : this.state.tables
               ? this.state.tables
               : []
-          }
-          renderItem={({ item, index }) => {
-            const color = hexToRgb(this.colors[index % 12]);
-            const dep = item; //this.props.Department.current.Tables[item];
-            return (
-              <TouchableHighlight
-                underlayColor="#ffffff00"
-                key={index}
-                style={[
-                  style.button,
-                  {
-                    backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)`,
-                    flexDirection: "row",
-                    borderColor: item.Check
-                      ? colors.inputTextColor
-                      : colors.borderColor,
-                  },
-                ]}
-                onPress={async () => {
-                  await this.props.DepartmentActions.setCurrentTable(item);
-                  if (
-                    this.props.Department.currentTable &&
-                    this.props.Department.currentTable.Check
-                  ) {
-                    await this.props.DepartmentActions.getCheckDetail(
-                      this.props.Department.currentTable.Check.CHECKID
-                    );
-                  }
-                  this.props.navigation.navigate("Check");
-                }}
-              >
-                <React.Fragment>
-                  {item.Check ? (
-                    <FontAwesome5
-                      name="users"
-                      size={20}
-                      color={colors.inputTextColor}
-                      style={{
-                        position: "absolute",
-                        flexDirection: "row",
-                        alignContent: "center",
-                        alignItems: "center",
-                        alignSelf: "center",
-                        justifyContent: "center",
-                        textAlign: "center",
-                        bottom: 5,
-                        width: "100%",
-                      }}
-                    />
-                  ) : null}
-                  <Text
-                    style={[
-                      style.buttonText,
-                      {
-                        color: item.Check
-                          ? colors.inputTextColor
-                          : colors.borderColor,
-                      },
-                    ]}
-                  >
-                    {dep.TABLENO}
-                  </Text>
-                </React.Fragment>
-              </TouchableHighlight>
-            );
-          }}
-          numColumns={3}
-          keyExtractor={(item, index) => index.toString()}
-        />
+            ).filter((x) =>
+              this.state.currentGroup
+                ? x.TABLEGROUP == this.state.currentGroup
+                : true
+            )}
+            renderItem={({ item, index }) => {
+              const color = hexToRgb(this.colors[index % 12]);
+              const dep = item; //this.props.Department.current.Tables[item];
+              return (
+                <TouchableHighlight
+                  underlayColor="#ffffff00"
+                  key={index}
+                  style={[
+                    style.button,
+                    {
+                      backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)`,
+                      flexDirection: "row",
+                      borderColor: item.Check
+                        ? colors.inputTextColor
+                        : colors.borderColor,
+                    },
+                  ]}
+                  onPress={async () => {
+                    await this.props.DepartmentActions.setCurrentTable(item);
+                    if (
+                      this.props.Department.currentTable &&
+                      this.props.Department.currentTable.Check
+                    ) {
+                      await this.props.DepartmentActions.getCheckDetail(
+                        this.props.Department.currentTable.Check.CHECKID
+                      );
+                    }
+                    this.props.navigation.navigate("Check");
+                  }}
+                >
+                  <React.Fragment>
+                    {item.Check ? (
+                      <FontAwesome5
+                        name="users"
+                        size={20}
+                        color={colors.inputTextColor}
+                        style={{
+                          position: "absolute",
+                          flexDirection: "row",
+                          alignContent: "center",
+                          alignItems: "center",
+                          alignSelf: "center",
+                          justifyContent: "center",
+                          textAlign: "center",
+                          bottom: 5,
+                          width: "100%",
+                        }}
+                      />
+                    ) : null}
+                    <Text
+                      style={[
+                        style.buttonText,
+                        {
+                          color: item.Check
+                            ? colors.inputTextColor
+                            : colors.borderColor,
+                        },
+                      ]}
+                    >
+                      {dep.TABLENO}
+                    </Text>
+                  </React.Fragment>
+                </TouchableHighlight>
+              );
+            }}
+            numColumns={3}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </Drawer>
         {this.state.tables && this.state.tables.length > 0 ? (
           <View style={{ flexDirection: "row" }}>
             <TextInput
@@ -182,6 +295,21 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
               }}
             >
               <FontAwesome5 name="times" size={35} color={"#ffffff"} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                padding: 5,
+                backgroundColor: colors.color1,
+              }}
+              onPress={() => {
+                if (this.state.showCategory) {
+                  this.drawer.current.closeDrawer();
+                } else {
+                  this.drawer.current.openDrawer();
+                }
+              }}
+            >
+              <FontAwesome5 name="bars" size={35} color={"#ffffff"} />
             </TouchableOpacity>
           </View>
         ) : null}
