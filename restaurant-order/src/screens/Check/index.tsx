@@ -34,9 +34,7 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
   scheme: ColorScheme;
   colors: any;
 
-  async componentDidMount() {
-   
-  }
+  async componentDidMount() {}
   render() {
     return (
       <BackImage>
@@ -51,7 +49,8 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
           initialNumToRender={10}
           removeClippedSubviews={true}
           data={
-            this.props.Department.currentTable && this.props.Department.currentTable.Check
+            this.props.Department.currentTable &&
+            this.props.Department.currentTable.Check
               ? this.props.Department.currentTable.Check.CheckDetails
               : []
           }
@@ -98,10 +97,16 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
           }}
           keyExtractor={(item, index) => index.toString()}
         />
-        <View style={{ height: 50, flexDirection: "row" }}>
+        <View
+          style={{
+            height: 50,
+            flexDirection: "row",
+            backgroundColor: colors.color1,
+          }}
+        >
           <Text
             style={{
-              width: "50%",
+              flex: 3,
               alignSelf: "flex-end",
               color: colors.textColor,
               fontSize: 20,
@@ -112,7 +117,7 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
           </Text>
           <Text
             style={{
-              width: "50%",
+              flex: 1,
               alignSelf: "flex-end",
               textAlign: "right",
               color: colors.textColor,
@@ -120,7 +125,8 @@ export class ChecksScreenComp extends Component<Props, ChecksScreenState> {
               lineHeight: 50,
             }}
           >
-            {this.props.Department.currentTable && this.props.Department.currentTable.Check &&
+            {this.props.Department.currentTable &&
+            this.props.Department.currentTable.Check &&
             this.props.Department.currentTable.Check.CHECKTOTAL
               ? this.props.Department.currentTable.Check.CHECKTOTAL.toFixed(2)
               : (0).toFixed(2)}

@@ -20,11 +20,13 @@ import {
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import SideMenu from "react-native-side-menu";
 
 const { width } = Dimensions.get("window");
 
 interface ProductScreenState {
   items?: IStok[];
+  showCategory?: boolean;
   search?: string;
 }
 
@@ -41,7 +43,7 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
     this.scheme = new ColorScheme();
     this.scheme.scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
-    this.state = { items: [], search: "" };
+    this.state = { items: [], search: "", showCategory: false };
   }
   scheme: ColorScheme;
   colors: any;
@@ -78,180 +80,193 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
     return (
       <BackImage>
         <LoaderSpinner showLoader={this.props.Department.isRequest} />
-        <FlatList
-          keyboardDismissMode="on-drag"
-          style={{ flex: 1 }}
-          keyboardShouldPersistTaps="always"
-          updateCellsBatchingPeriod={10}
-          windowSize={20}
-          maxToRenderPerBatch={20}
-          initialNumToRender={10}
-          removeClippedSubviews={true}
-          data={
-            this.state.items && this.state.search
-              ? this.searchData(this.state.search)
-              : this.state.items
-              ? this.state.items
-              : []
-          }
-          renderItem={({ item, index }) => {
-            const color = hexToRgb(this.colors[index % 12]);
+        <SideMenu isOpen={this.state.showCategory} menuPosition="right">
+          <FlatList
+            keyboardDismissMode="on-drag"
+            style={{ flex: 1 }}
+            keyboardShouldPersistTaps="always"
+            updateCellsBatchingPeriod={10}
+            windowSize={20}
+            maxToRenderPerBatch={20}
+            initialNumToRender={10}
+            removeClippedSubviews={true}
+            data={
+              this.state.items && this.state.search
+                ? this.searchData(this.state.search)
+                : this.state.items
+                ? this.state.items
+                : []
+            }
+            renderItem={({ item, index }) => {
+              const color = hexToRgb(this.colors[index % 12]);
 
-            return (
-              <View
-                key={index}
-                style={[
-                  {
-                    backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)`,
-                    padding: 3,
-                    flexDirection: "row",
-                    marginVertical: 3,
-                  },
-                ]}
-              >
-                <Image
-                  style={{
-                    flexDirection: "column",
-                    width: 60,
-                    height: 60,
-                    marginRight: 5,
-                    borderRadius: 10,
-                    borderWidth: 5,
-                    borderColor: colors.borderColor,
-                  }}
-                  source={{ uri: item.PHOTOURL }}
-                />
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        color: colors.textColor,
-                        fontSize: 16,
-                        flex: 3,
-                        flexDirection: "column",
-                      }}
-                    >
-                      {item.NAME}
-                    </Text>
-                    <Text
-                      style={{
-                        color: colors.textColor,
-                        flex: 1,
-                        flexDirection: "column",
-                        fontSize: 16,
-                        alignContent: "flex-end",
-                        alignItems: "flex-end",
-                        alignSelf: "flex-start",
-                        textAlign: "right",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      {item.PRICE}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      alignItems: "flex-end",
-                      justifyContent: "flex-end",
-                      flex: 1,
-                      flexDirection: "row",
+              return (
+                <View
+                  key={index}
+                  style={[
+                    {
+                      backgroundColor: `rgba(${color.r},${color.g},${color.b},0.3)`,
                       padding: 3,
+                      flexDirection: "row",
+                      marginVertical: 3,
+                    },
+                  ]}
+                >
+                  <Image
+                    style={{
+                      flexDirection: "column",
+                      width: 60,
+                      height: 60,
+                      marginRight: 5,
+                      borderRadius: 10,
+                      borderWidth: 5,
+                      borderColor: colors.borderColor,
                     }}
-                  >
-                    <TouchableOpacity
-                      style={{
-                        borderRadius: 10,
-                        borderBottomEndRadius: 0,
-                        borderTopEndRadius: 0,
-                        borderRightWidth: 0,
-                        padding: 5,
-                        borderWidth: 2,
-                        width: 50,
-                        justifyContent: "center",
-                        alignContent: "center",
-                        alignItems: "center",
-                        alignSelf: "center",
-                        borderColor: colors.borderColor,
-                        backgroundColor: colors.color3,
-                      }}
-                    >
-                      <FontAwesome5
-                        name="minus"
-                        size={25}
-                        color={colors.inputTextColor}
-                      />
-                    </TouchableOpacity>
+                    source={{ uri: item.PHOTOURL }}
+                  />
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          color: colors.textColor,
+                          fontSize: 16,
+                          flex: 3,
+                          flexDirection: "column",
+                        }}
+                      >
+                        {item.NAME}
+                      </Text>
+                      <Text
+                        style={{
+                          color: colors.textColor,
+                          flex: 1,
+                          flexDirection: "column",
+                          fontSize: 16,
+                          alignContent: "flex-end",
+                          alignItems: "flex-end",
+                          alignSelf: "flex-start",
+                          textAlign: "right",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        {item.PRICE}
+                      </Text>
+                    </View>
                     <View
                       style={{
-                        borderRadius: 0,
-                        padding: 4,
-                        borderWidth: 2,
-                        minWidth: 60,
-                        justifyContent: "center",
-                        alignContent: "center",
-                        alignItems: "center",
-                        alignSelf: "center",
-                        borderColor: colors.borderColor,
-                        backgroundColor: colors.inputTextColor,
+                        alignItems: "flex-end",
+                        justifyContent: "flex-end",
+                        flex: 1,
+                        flexDirection: "row",
+                        padding: 3,
                       }}
                     >
-                      <Text style={{ fontSize: 18 }}>0</Text>
+                      <TouchableOpacity
+                        style={{
+                          borderRadius: 10,
+                          borderBottomEndRadius: 0,
+                          borderTopEndRadius: 0,
+                          borderRightWidth: 0,
+                          padding: 5,
+                          borderWidth: 2,
+                          width: 50,
+                          justifyContent: "center",
+                          alignContent: "center",
+                          alignItems: "center",
+                          alignSelf: "center",
+                          borderColor: colors.borderColor,
+                          backgroundColor: colors.color3,
+                        }}
+                      >
+                        <FontAwesome5
+                          name="minus"
+                          size={25}
+                          color={colors.inputTextColor}
+                        />
+                      </TouchableOpacity>
+                      <View
+                        style={{
+                          borderRadius: 0,
+                          padding: 4,
+                          borderWidth: 2,
+                          minWidth: 60,
+                          justifyContent: "center",
+                          alignContent: "center",
+                          alignItems: "center",
+                          alignSelf: "center",
+                          borderColor: colors.borderColor,
+                          backgroundColor: colors.inputTextColor,
+                        }}
+                      >
+                        <Text style={{ fontSize: 18 }}>0</Text>
+                      </View>
+                      <TouchableOpacity
+                        style={{
+                          borderRadius: 10,
+                          borderBottomStartRadius: 0,
+                          borderTopStartRadius: 0,
+                          borderLeftWidth: 0,
+                          padding: 5,
+                          borderWidth: 2,
+                          width: 50,
+                          justifyContent: "center",
+                          alignContent: "center",
+                          alignItems: "center",
+                          alignSelf: "center",
+                          borderColor: colors.borderColor,
+                          backgroundColor: colors.color3,
+                        }}
+                      >
+                        <FontAwesome5
+                          name="plus"
+                          size={25}
+                          color={colors.inputTextColor}
+                        />
+                      </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                      style={{
-                        borderRadius: 10,
-                        borderBottomStartRadius: 0,
-                        borderTopStartRadius: 0,
-                        borderLeftWidth: 0,
-                        padding: 5,
-                        borderWidth: 2,
-                        width: 50,
-                        justifyContent: "center",
-                        alignContent: "center",
-                        alignItems: "center",
-                        alignSelf: "center",
-                        borderColor: colors.borderColor,
-                        backgroundColor: colors.color3,
-                      }}
-                    >
-                      <FontAwesome5
-                        name="plus"
-                        size={25}
-                        color={colors.inputTextColor}
-                      />
-                    </TouchableOpacity>
                   </View>
                 </View>
-              </View>
-            );
-          }}
-          keyExtractor={(item, index) => index.toString()}
-        />
-        <View style={{ flexDirection: "row" }}>
-          <TextInput
-            placeholder="Ara..."
-            value={this.state.search}
-            placeholderTextColor={colors.primaryButtonTextColor}
-            style={style.buttonText}
-            clearButtonMode="always"
-            autoFocus={true}
-            clearTextOnFocus
-            onChangeText={(text) => {
-              this.setState({ search: text });
+              );
             }}
+            keyExtractor={(item, index) => index.toString()}
           />
-          <TouchableOpacity
-            style={{
-              padding: 5,
-              backgroundColor: colors.color1,
-            }}
-            onPress={() => {
-              this.setState({ search: "" });
-            }}
-          >
-            <FontAwesome5 name="times" size={35} color={"#ffffff"} />
-          </TouchableOpacity>
-        </View>
+          <View style={{ flexDirection: "row" }}>
+            <TextInput
+              placeholder="Ara..."
+              value={this.state.search}
+              placeholderTextColor={colors.primaryButtonTextColor}
+              style={style.buttonText}
+              clearButtonMode="always"
+              autoFocus={true}
+              clearTextOnFocus
+              onChangeText={(text) => {
+                this.setState({ search: text });
+              }}
+            />
+            <TouchableOpacity
+              style={{
+                padding: 5,
+                backgroundColor: colors.color1,
+              }}
+              onPress={() => {
+                this.setState({ search: "" });
+              }}
+            >
+              <FontAwesome5 name="times" size={35} color={"#ffffff"} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                padding: 5,
+                backgroundColor: colors.color1,
+              }}
+              onPress={() => {
+                this.setState({ showCategory: !this.state.showCategory });
+              }}
+            >
+              <FontAwesome5 name="bars" size={35} color={"#ffffff"} />
+            </TouchableOpacity>
+          </View>
+        </SideMenu>
       </BackImage>
     );
   }
