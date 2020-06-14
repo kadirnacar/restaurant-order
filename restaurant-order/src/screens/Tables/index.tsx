@@ -1,19 +1,30 @@
 import { BackImage, LoaderSpinner } from "@components";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { ITable } from "@models";
 import { NavigationProp } from "@react-navigation/native";
 import { DepartmentActions } from "@reducers";
 import { ApplicationState } from "@store";
 import { colors, hexToRgb } from "@tools";
 import ColorScheme from "color-scheme";
+import fuzzysort from "fuzzysort";
 import React, { Component } from "react";
-import { Dimensions, FlatList, StyleSheet, Text } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { FontAwesome5 } from "@expo/vector-icons";
+
 const { width } = Dimensions.get("window");
 interface TablesScreenState {
   tables?: ITable[];
+  search?: string;
 }
 
 interface TablesProps {
@@ -29,7 +40,7 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
     this.scheme = new ColorScheme();
     this.scheme.scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
-    this.state = { tables: [] };
+    this.state = { tables: [], search: "" };
     this.props.navigation.addListener("focus", async (e) => {
       await this.props.DepartmentActions.setCurrentTable(null);
     });
@@ -56,13 +67,29 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
         : [];
     this.setState({ tables: userDeps });
   }
+  searchData(search: string) {
+    return fuzzysort
+      .go(search, this.state.tables, {
+        limit: 20,
+        allowTypo: true,
+        threshold: -50000,
+        keys: ["TABLENO"],
+      })
+      .map((i) => i.obj);
+  }
   render() {
     return (
       <BackImage>
         <LoaderSpinner showLoader={this.props.Department.isRequest} />
         <FlatList
           style={{ flex: 1 }}
-          data={this.state.tables}
+          data={
+            this.state.tables && this.state.search
+              ? this.searchData(this.state.search)
+              : this.state.tables
+              ? this.state.tables
+              : []
+          }
           renderItem={({ item, index }) => {
             const color = hexToRgb(this.colors[index % 12]);
             const dep = item; //this.props.Department.current.Tables[item];
@@ -131,6 +158,33 @@ export class TablesScreenComp extends Component<Props, TablesScreenState> {
           numColumns={3}
           keyExtractor={(item, index) => index.toString()}
         />
+        {this.state.tables && this.state.tables.length > 0 ? (
+          <View style={{ flexDirection: "row" }}>
+            <TextInput
+              placeholder="Ara..."
+              value={this.state.search}
+              placeholderTextColor={colors.primaryButtonTextColor}
+              style={style.searchText}
+              clearButtonMode="always"
+              autoFocus={true}
+              clearTextOnFocus
+              onChangeText={(text) => {
+                this.setState({ search: text });
+              }}
+            />
+            <TouchableOpacity
+              style={{
+                padding: 5,
+                backgroundColor: colors.color1,
+              }}
+              onPress={() => {
+                this.setState({ search: "" });
+              }}
+            >
+              <FontAwesome5 name="times" size={35} color={"#ffffff"} />
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </BackImage>
     );
   }
@@ -158,6 +212,15 @@ const style = StyleSheet.create({
     color: colors.textColor,
     textAlignVertical: "center",
     textAlign: "center",
+  },
+  searchText: {
+    flex: 1,
+    backgroundColor: colors.color1,
+    fontSize: 18,
+    justifyContent: "flex-end",
+    color: colors.textColor,
+    textAlignVertical: "center",
+    textAlign: "left",
   },
 });
 

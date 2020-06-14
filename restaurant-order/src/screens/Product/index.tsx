@@ -1,10 +1,12 @@
 import { BackImage, LoaderSpinner } from "@components";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { IStok } from "@models";
 import { NavigationProp } from "@react-navigation/native";
 import { DepartmentActions } from "@reducers";
 import { ApplicationState } from "@store";
 import { colors, hexToRgb } from "@tools";
 import ColorScheme from "color-scheme";
+import fuzzysort from "fuzzysort";
 import React, { Component } from "react";
 import {
   Dimensions,
@@ -18,8 +20,6 @@ import {
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { IStok } from "@models";
-import fuzzysort from "fuzzysort";
 
 const { width } = Dimensions.get("window");
 
@@ -170,7 +170,7 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                         justifyContent: "center",
                         alignContent: "center",
                         alignItems: "center",
-                        alignSelf:"center",
+                        alignSelf: "center",
                         borderColor: colors.borderColor,
                         backgroundColor: colors.color3,
                       }}
@@ -209,7 +209,7 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                         justifyContent: "center",
                         alignContent: "center",
                         alignItems: "center",
-                        alignSelf:"center",
+                        alignSelf: "center",
                         borderColor: colors.borderColor,
                         backgroundColor: colors.color3,
                       }}
