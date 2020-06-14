@@ -1,4 +1,5 @@
 import { BackImage, LoaderSpinner } from "@components";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import { DepartmentActions } from "@reducers";
 import { ApplicationState } from "@store";
@@ -8,22 +9,23 @@ import React, { Component } from "react";
 import {
   Dimensions,
   FlatList,
+  Image,
   StyleSheet,
   Text,
+  TextInput,
   View,
-  Image,
 } from "react-native";
-import {
-  TouchableHighlight,
-  TouchableOpacity,
-} from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { IStok } from "@models";
+import fuzzysort from "fuzzysort";
+
 const { width } = Dimensions.get("window");
 
 interface ProductScreenState {
-  tables?: any[];
+  items?: IStok[];
+  search?: string;
 }
 
 interface ProductProps {
@@ -39,12 +41,39 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
     this.scheme = new ColorScheme();
     this.scheme.scheme("analogic").variation("hard");
     this.colors = this.scheme.colors();
-    this.state = { tables: [] };
+    this.state = { items: [], search: "" };
   }
   scheme: ColorScheme;
   colors: any;
 
-  async componentDidMount() {}
+  async componentDidMount() {
+    const source = this.props.Stok.stoks.filter((t) =>
+      this.props.Stok.stokDepartments && this.props.Department.current
+        ? this.props.Stok.stokDepartments.findIndex(
+            (d) =>
+              d.DEPID == this.props.Department.current.ID && d.PRODUCTID == t.ID
+          ) > -1
+        : false
+    );
+    // const groups = source.map((x) => x.STOKGRUPID).filter(distinct);
+    // this.setState({
+    //   source,
+    //   groupIds: groups,
+    // });
+    this.setState({
+      items: source,
+    });
+  }
+  searchData(search: string) {
+    return fuzzysort
+      .go(search, this.state.items, {
+        limit: 20,
+        allowTypo: true,
+        threshold: -50000,
+        keys: ["NAME"],
+      })
+      .map((i) => i.obj);
+  }
   render() {
     return (
       <BackImage>
@@ -58,7 +87,13 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
           maxToRenderPerBatch={20}
           initialNumToRender={10}
           removeClippedSubviews={true}
-          data={this.props.Stok.stoks ? this.props.Stok.stoks : []}
+          data={
+            this.state.items && this.state.search
+              ? this.searchData(this.state.search)
+              : this.state.items
+              ? this.state.items
+              : []
+          }
           renderItem={({ item, index }) => {
             const color = hexToRgb(this.colors[index % 12]);
 
@@ -77,8 +112,8 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                 <Image
                   style={{
                     flexDirection: "column",
-                    width: 75,
-                    height: 75,
+                    width: 60,
+                    height: 60,
                     marginRight: 5,
                     borderRadius: 10,
                     borderWidth: 5,
@@ -91,7 +126,7 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                     <Text
                       style={{
                         color: colors.textColor,
-                        fontSize: 20,
+                        fontSize: 16,
                         flex: 3,
                         flexDirection: "column",
                       }}
@@ -126,8 +161,16 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                     <TouchableOpacity
                       style={{
                         borderRadius: 10,
+                        borderBottomEndRadius: 0,
+                        borderTopEndRadius: 0,
+                        borderRightWidth: 0,
                         padding: 5,
                         borderWidth: 2,
+                        width: 50,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        alignSelf:"center",
                         borderColor: colors.borderColor,
                         backgroundColor: colors.color3,
                       }}
@@ -140,10 +183,10 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                     </TouchableOpacity>
                     <View
                       style={{
-                        borderRadius: 10,
-                        padding: 5,
+                        borderRadius: 0,
+                        padding: 4,
                         borderWidth: 2,
-                        minWidth: 80,
+                        minWidth: 60,
                         justifyContent: "center",
                         alignContent: "center",
                         alignItems: "center",
@@ -157,8 +200,16 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
                     <TouchableOpacity
                       style={{
                         borderRadius: 10,
+                        borderBottomStartRadius: 0,
+                        borderTopStartRadius: 0,
+                        borderLeftWidth: 0,
                         padding: 5,
                         borderWidth: 2,
+                        width: 50,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        alignSelf:"center",
                         borderColor: colors.borderColor,
                         backgroundColor: colors.color3,
                       }}
@@ -176,6 +227,31 @@ export class ProductScreenComp extends Component<Props, ProductScreenState> {
           }}
           keyExtractor={(item, index) => index.toString()}
         />
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            placeholder="Ara..."
+            value={this.state.search}
+            placeholderTextColor={colors.primaryButtonTextColor}
+            style={style.buttonText}
+            clearButtonMode="always"
+            autoFocus={true}
+            clearTextOnFocus
+            onChangeText={(text) => {
+              this.setState({ search: text });
+            }}
+          />
+          <TouchableOpacity
+            style={{
+              padding: 5,
+              backgroundColor: colors.color1,
+            }}
+            onPress={() => {
+              this.setState({ search: "" });
+            }}
+          >
+            <FontAwesome5 name="times" size={35} color={"#ffffff"} />
+          </TouchableOpacity>
+        </View>
       </BackImage>
     );
   }
@@ -197,12 +273,12 @@ const style = StyleSheet.create({
   },
   buttonText: {
     flex: 1,
-
-    fontSize: 26,
-    fontWeight: "bold",
+    backgroundColor: colors.color1,
+    fontSize: 18,
+    justifyContent: "flex-end",
     color: colors.textColor,
     textAlignVertical: "center",
-    textAlign: "center",
+    textAlign: "left",
   },
 });
 
