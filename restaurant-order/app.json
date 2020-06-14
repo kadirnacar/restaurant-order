@@ -24,7 +24,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": true,
+      "bundleIdentifier": "kadirnacar.restaurantorder"
+    },
+    "android": {
+      "package": "com.kadirnacar.restaurantorder"
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
   }
 }
